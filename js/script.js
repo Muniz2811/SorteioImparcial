@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const numbersContainer = document.getElementById('numbers-container');
     const emojiContainer = document.getElementById('emoji-container');
     
+    function getRadius() {
+        return window.innerWidth <= 600 ? 120 : 160;
+    }
+    
     function initializeRoulette() {
         numbersContainer.innerHTML = '';
         
@@ -27,9 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
             numberElement.dataset.value = i;
             
             const angle = (i - min) * anglePerNumber;
-            const radius = 160; 
+            const radius = getRadius(); 
             
-
             const adjustedAngle = angle - 90;
             const x = radius * Math.cos(adjustedAngle * Math.PI / 180);
             const y = radius * Math.sin(adjustedAngle * Math.PI / 180);
@@ -139,4 +142,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     minInput.addEventListener('change', initializeRoulette);
     maxInput.addEventListener('change', initializeRoulette);
+    
+    // Reinicializar a roleta quando a tela for redimensionada
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            initializeRoulette();
+        }, 250);
+    });
 });

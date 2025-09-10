@@ -244,8 +244,8 @@ footer {
 /* Responsive design */
 @media (max-width: 600px) {
     .roulette-wheel {
-        width: 300px;
-        height: 300px;
+        width: 280px;
+        height: 280px;
     }
     
     .input-section {
@@ -259,5 +259,16 @@ footer {
     
     .result {
         font-size: 2.5rem;
+    }
+    
+    .number {
+        font-size: 1rem;
+        width: 30px;
+        height: 30px;
+    }
+    
+    .roulette-center {
+        width: 60px;
+        height: 60px;
     }
 }
