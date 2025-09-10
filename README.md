@@ -1,1 +1,1 @@
-hehehehe
+hehehehe roleta super imparcial da sempre certinho e aleatorio
