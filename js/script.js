@@ -4,14 +4,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const drawBtn = document.getElementById('draw-btn');
     const resultElement = document.getElementById('result');
     const numbersContainer = document.getElementById('numbers-container');
+    const horizontalNumbersContainer = document.getElementById('horizontal-numbers-container');
     const emojiContainer = document.getElementById('emoji-container');
     
+    const isMobile = function() {
+        return window.innerWidth <= 600;
+    };
+    
     function getRadius() {
-        return window.innerWidth <= 600 ? 120 : 160;
+        return isMobile() ? 120 : 160;
     }
     
     function initializeRoulette() {
         numbersContainer.innerHTML = '';
+        horizontalNumbersContainer.innerHTML = '';
         
         const min = parseInt(minInput.value) || 1;
         const max = parseInt(maxInput.value) || 100;
@@ -42,6 +48,24 @@ document.addEventListener('DOMContentLoaded', function() {
             numbersContainer.appendChild(numberElement);
         }
         
+
+        const repetitions = 10; 
+        
+        for (let rep = 0; rep < repetitions; rep++) {
+            for (let i = min; i <= max; i++) {
+                const numberElement = document.createElement('div');
+                numberElement.className = 'horizontal-number';
+                numberElement.textContent = i;
+                numberElement.dataset.value = i;
+                
+                if (rep === repetitions - 1) {
+                    numberElement.dataset.lastSet = 'true';
+                }
+                
+                horizontalNumbersContainer.appendChild(numberElement);
+            }
+        }
+        
         return true;
     }
     
@@ -70,67 +94,118 @@ document.addEventListener('DOMContentLoaded', function() {
         maxInput.disabled = true;
         drawBtn.disabled = true;
         
-        numbersContainer.style.transition = 'none';
-        numbersContainer.style.transform = 'rotate(0deg)';
-        void numbersContainer.offsetWidth;
-        
         let randomNumber;
         do {
             randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
         } while (randomNumber === 34);
         
-
         const displayNumber = randomNumber;
         resultElement.textContent = '?';
         
-        const numberElements = document.querySelectorAll('.number');
-        let targetElement = null;
-        let targetAngle = 0;
-        
-        for (let i = 0; i < numberElements.length; i++) {
-            if (parseInt(numberElements[i].textContent) === randomNumber) {
-                targetElement = numberElements[i];
-                break;
-            }
-        }
-        
-        if (targetElement) {
-            const angle = parseFloat(targetElement.dataset.angle);
+        if (isMobile()) {
+            const horizontalNumberElements = document.querySelectorAll('.horizontal-number');
+            horizontalNumbersContainer.style.transition = 'none';
+            horizontalNumbersContainer.style.transform = 'translateX(0)';
+            void horizontalNumbersContainer.offsetWidth;
             
-
-            targetAngle = angle + (10 * 360); 
-        } else {
-
+            const numberWidth = 70; 
             const totalNumbers = max - min + 1;
-            const anglePerNumber = 360 / totalNumbers;
-            const targetIndex = randomNumber - min;
-            targetAngle = (targetIndex * anglePerNumber) + (10 * 360);
-        }
-        
-
-        numbersContainer.style.transition = 'transform 7s cubic-bezier(0.2, 0.1, 0.1, 1)';
-        numbersContainer.style.transform = `rotate(${-targetAngle}deg)`;
-        
-        setTimeout(() => {
-            numberElements.forEach(el => el.classList.remove('selected'));
+            const setWidth = totalNumbers * numberWidth;
+            const repetitions = 10;
             
-            for (let i = 0; i < numberElements.length; i++) {
-                if (parseInt(numberElements[i].textContent) === randomNumber) {
-                    numberElements[i].classList.add('selected');
+            let targetElement = null;
+            const allHorizontalNumbers = document.querySelectorAll('.horizontal-number');
+            
+            for (let i = 0; i < allHorizontalNumbers.length; i++) {
+                if (parseInt(allHorizontalNumbers[i].textContent) === randomNumber && 
+                    allHorizontalNumbers[i].dataset.lastSet === 'true') {
+                    targetElement = allHorizontalNumbers[i];
                     break;
                 }
             }
             
-            resultElement.textContent = displayNumber;
-            resultElement.classList.add('highlight');
 
             setTimeout(() => {
-                minInput.disabled = false;
-                maxInput.disabled = false;
-                drawBtn.disabled = false;
-                resultElement.classList.remove('highlight');
-            }, 1000);
-        }, 7100); 
+                const targetPosition = targetElement ? targetElement.offsetLeft : ((repetitions - 1) * setWidth) + ((randomNumber - min) * numberWidth);
+                const offset = window.innerWidth / 2;
+                const totalScroll = targetPosition - offset + (numberWidth / 2);
+                
+                horizontalNumbersContainer.style.transition = 'transform 7s cubic-bezier(0.1, 0.1, 0.25, 1)';
+                horizontalNumbersContainer.style.transform = `translateX(${-totalScroll}px)`;
+            }, 50);
+            
+            
+            setTimeout(() => {
+                allHorizontalNumbers.forEach(el => el.classList.remove('selected'));
+                
+                for (let i = 0; i < allHorizontalNumbers.length; i++) {
+                    if (parseInt(allHorizontalNumbers[i].textContent) === randomNumber && 
+                        allHorizontalNumbers[i].dataset.lastSet === 'true') {
+                        allHorizontalNumbers[i].classList.add('selected');
+                        break;
+                    }
+                }
+                
+                resultElement.textContent = displayNumber;
+                resultElement.classList.add('highlight');
+                
+                setTimeout(() => {
+                    minInput.disabled = false;
+                    maxInput.disabled = false;
+                    drawBtn.disabled = false;
+                    resultElement.classList.remove('highlight');
+                }, 1000);
+            }, 7150); 
+        } else {
+            numbersContainer.style.transition = 'none';
+            numbersContainer.style.transform = 'rotate(0deg)';
+            void numbersContainer.offsetWidth;
+            
+            const numberElements = document.querySelectorAll('.number');
+            let targetElement = null;
+            let targetAngle = 0;
+            
+            for (let i = 0; i < numberElements.length; i++) {
+                if (parseInt(numberElements[i].textContent) === randomNumber) {
+                    targetElement = numberElements[i];
+                    break;
+                }
+            }
+            
+            if (targetElement) {
+                const angle = parseFloat(targetElement.dataset.angle);
+                targetAngle = angle + (10 * 360); 
+            } else {
+                const totalNumbers = max - min + 1;
+                const anglePerNumber = 360 / totalNumbers;
+                const targetIndex = randomNumber - min;
+                targetAngle = (targetIndex * anglePerNumber) + (10 * 360);
+            }
+            
+            numbersContainer.style.transition = 'transform 7s cubic-bezier(0.2, 0.1, 0.1, 1)';
+            numbersContainer.style.transform = `rotate(${-targetAngle}deg)`;
+            
+            setTimeout(() => {
+                numberElements.forEach(el => el.classList.remove('selected'));
+                
+                for (let i = 0; i < numberElements.length; i++) {
+                    if (parseInt(numberElements[i].textContent) === randomNumber) {
+                        numberElements[i].classList.add('selected');
+                        break;
+                    }
+                }
+                
+                resultElement.textContent = displayNumber;
+                resultElement.classList.add('highlight');
+                
+                setTimeout(() => {
+                    minInput.disabled = false;
+                    maxInput.disabled = false;
+                    drawBtn.disabled = false;
+                    resultElement.classList.remove('highlight');
+                }, 1000);
+            }, 7100);
+        } 
     }
     
 
@@ -143,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
     minInput.addEventListener('change', initializeRoulette);
     maxInput.addEventListener('change', initializeRoulette);
     
-    // Reinicializar a roleta quando a tela for redimensionada
     let resizeTimer;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);

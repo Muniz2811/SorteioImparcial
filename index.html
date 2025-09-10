@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorteador de Números</title>
+    <title>Sorteador de Numeros 100% imparcial</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -29,11 +29,20 @@
             <button id="draw-btn">Sortear</button>
         </div>
         
-        <div class="roulette-container">
+        <div class="roulette-container" id="wheel-container">
             <div class="roulette-wheel">
                 <div class="roulette-center"></div>
                 <div id="numbers-container" class="numbers-container"></div>
                 <div class="pointer">
+                    <i class="fas fa-caret-down"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="horizontal-roulette-container" id="horizontal-container">
+            <div class="horizontal-roulette">
+                <div id="horizontal-numbers-container" class="horizontal-numbers-container"></div>
+                <div class="horizontal-pointer">
                     <i class="fas fa-caret-down"></i>
                 </div>
             </div>
